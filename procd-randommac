@@ -1,0 +1,31 @@
+#!/bin/sh /etc/rc.common
+
+# Script name and description
+START=99
+STOP=10
+PROG_NAME="macchanger"
+INTERFACE_LIST="phy1-ap0 phy0-ap0 eth0.2 eth0.1 eth0 br-lan"
+
+start() {
+    for iface in $INTERFACE_LIST; do
+        if [ -d "/sys/class/net/$iface" ]; then
+            # Arayüzü kapat
+            ifconfig "$iface" down
+
+            # Rastgele MAC adresi oluştur
+            macchanger -r "$iface"
+
+            # Arayüzü aç
+            ifconfig "$iface" up
+        fi
+    done
+}
+
+stop() {
+    for iface in $INTERFACE_LIST; do
+        if [ -d "/sys/class/net/$iface" ]; then
+            # Varsayılan MAC adresini geri yükle (isteğe bağlı)
+            macchanger -p "$iface"
+        fi
+    done
+}
