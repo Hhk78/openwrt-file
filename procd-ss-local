@@ -1,0 +1,25 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=10
+
+USE_PROCD=1
+
+start_service() {
+    procd_open_instance
+    procd_set_param command /usr/bin/ss-local \
+        --plugin /root/v2p \
+        --plugin-opts "host=google.com" \
+        -s IP.IP.IP.IP \
+        -p 8388 \
+        -k "PASSWD" \
+        -m "aes-256-gcm" \
+        -l 1080
+    procd_set_param respawn
+    procd_close_instance
+}
+
+stop_service() {
+    # Gerekirse durdurma işlemi ekleyebilirsiniz
+    killall ss-local
+}
